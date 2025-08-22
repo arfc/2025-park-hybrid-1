@@ -4,11 +4,10 @@
 \usepackage{lineno}
 \usepackage{xspace}
 \usepackage{threeparttable}
-\usepackage{subfig}
 \modulolinenumbers[5]
 
 %% Journal name here
-\journal{FIXME: The Journal Name Goes Here}
+\journal{Annals of Nuclear Energy}
 
 %% `Elsevier LaTeX' style
 \bibliographystyle{elsarticle-num}
@@ -19,13 +18,19 @@
 \usepackage{booktabs} % nice rules (thick lines) for tables
 \usepackage{microtype} % improves typography for PDF
 \usepackage{hhline}
-\usepackage{amsmath}
-\usepackage{subfig}
 
 \usepackage{booktabs}
 \usepackage{threeparttable, tablefootnote}
 
 \usepackage{tabularx}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{bm}
+\usepackage{subcaption}
+\usepackage{siunitx}
 
 %% Special typesetting for Cyclus
 \newcommand{\Cyclus}{\textsc{Cyclus}\xspace}%
@@ -34,12 +39,18 @@
 
 % tikz %
 \usepackage{tikz}
-\usetikzlibrary{positioning, arrows, decorations, shapes}
-
+\usepackage{tkz-euclide}
+\usetikzlibrary{positioning, arrows, decorations, shapes, fit, backgrounds}
 \usetikzlibrary{shapes.geometric,arrows}
-\tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
-\tikzstyle{object} = [ellipse, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=green!30]
+\definecolor{illiniblue}{HTML}{B1C6E2}
+\definecolor{illiniorange}{HTML}{f8c2a2}
+\definecolor{green}{HTML}{c2e2b1}
+\tikzstyle{process} = [rectangle, rounded corners, thick, minimum width=7cm, minimum height=1cm, text centered, draw=black, fill=illiniblue, text width=18em]
+\tikzstyle{object} = [ellipse, minimum width=2cm, thick, minimum height=2.2cm, text centered, draw=black, fill=illiniorange, text width=12em]
+\tikzstyle{decision} = [diamond, thick, aspect=2, minimum width=2cm, minimum height=2cm, text centered, draw=black, fill=green, text width=6em]
 \tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{solver} = [rectangle, rounded corners, thick, minimum width=3cm, minimum height=1.5cm, text centered, draw=black, fill=illiniblue, text width=7em]
+\tikzstyle{bound} = [rectangle, rounded corners, thick, draw=black]
 
 % hyperref %
 \usepackage[hidelinks]{hyperref}
@@ -53,7 +64,7 @@
 
 \begin{document}
 \begin{frontmatter}
-\title{FIXME: The Title Goes Here}
+\title{A Hybrid $S_N$-Diffusion Neutronics Method for Control Rod Modeling}
 
 %\date{}                     % uncomment if you don't need date to appear
 
@@ -80,10 +91,14 @@ spent nuclear fuel
 \linenumbers
 
 \input{introduction}
-\input{methods}
-\input{results}
+%\input{lit}
+\input{hybrid}
+\input{msre}
 \input{conclusion}
-\input{acks}
+%\input{methods}
+%\input{results}
+%\input{conclusion}
+%\input{acks}
 
 \bibliography{bibliography}
 

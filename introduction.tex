@@ -1,10 +1,133 @@
 \section{Introduction}
 
-This is the introduction section. For consistency, use the
-\texttt{glossaries} package for acronyms such as ``\gls{SFR}".
-This automatically populates the glossaries list and abbreviates future
-mentions of ``\gls{SFR}".
+\glspl{MSR} exhibit improved safety characteristics over light-water reactors and other advanced
+solid-fueled reactors due to their large fuel expension reactivity coefficients and large
+margin-to-boiling from the liquid fuel form of uranium halides dissolved in molten salt coolant
+\cite{dolan_1_2017}.
+The fuel form also allows for online fuel reprocessing which reduces the amount of excess
+reactivity required to keep the core critical during operation. Nevertheless, control rods remain
+essential components in \glspl{MSR} for accident prevention and facilitate simpler reactor control
+procedures during start-up, shut-down, and load-following operations. It is therefore important to
+characterize and accurately model control rod effects through time-dependent multiphysics
+simulations to ensure safe reactor operation.
 
-All tables and figures must be referenced to in the text.
-Use the BibTeX package to manage your paper references and bibliography
-\cite{huff_extensions_2014}.
+Few existing \gls{MSR} multiphysics studies explicitly include control rods in their models. For
+instance, when modeling the \gls{MSRE} pump start-up and coast-down experiments at \gls{ORNL} which
+involved control rod movement, most numerical studies simulate the reactivity effects of the
+control rods by scaling the neutron source term by the neutron multiplication factor to keep their
+reactor model at
+criticality \cite{delpech_benchmark_2003, krepel_dyn3d-msr_2007}. Some studies include control rod
+models in their steady-state calculations. However, they resort to neutron source term scaling for
+the transient calculations due to the inaccuracy of neutron diffusion, $P_1$, and $SP_N$ methods in
+highly neutron absorbing regions \cite{kophazi_development_2009, jaradat_development_2021,
+yang_development_2022}.
+
+Others adopted homogenization of the control rods and adjacent regions in line with
+homogenization-based neutronics methods. Kophazi et al.\ \cite{kophazi_development_2009} modeled
+control rods as homogenized hexahedrons in their 3-D Cartesian geometry of the \gls{MSRE}
+and imposed albedo boundary conditions for the thermal neutron group. Jaradat et al.\
+\cite{jaradat_development_2021} and Yang et al.\ \cite{yang_development_2022} modeled the
+\gls{MSRE} control rods as homogenized wedges in their R-$\theta$-Z mesh due to the constraints of
+the nodal neutronics solver. Cui et al.\ \cite{cui_development_2021} also homogenized the control
+rods as regular hexahedral nodes in accordance with their nodal solver in Cartesian geometry. A
+disadvantage of homogenization-based methods is that it removes much of the small-scale
+heterogeneity in the flux and temperature. Obtaining a heterogeneous temperature distribution is
+especially important in \glspl{MSR} due to the combined fuel-coolant and the positive temperature
+reactivity feedback observed in graphite under certain conditions \cite{mathieu_thorium_2006}.
+
+The main difficulty with control rod modeling lies with control rods inducing highly anisotropic
+neutron angular fluxes and sharp gradients in the neutron flux in their vicinity. Control rods also
+cause shifts in the neutron energy spectrum because their absorption cross sections are much higher
+in the lower neutron energy range; more energetic neutrons generally have a higher probability of
+escaping the control rod region. As a consequence, modeling control rods accurately requires
+high-fidelity neutron transport methods to capture the angular dependence in the neutron flux near
+the highly absorbing medium. However, neutron transport methods, such as Monte Carlo, $S_N$, and
+$P_N$ methods, are computationally expensive and thus are mainly used for time-independent
+neutronic analyses. For time-dependent multiphysics
+simulations coupling neutronics to \gls{TH} and other physics present in nuclear reactors, most
+reactor analyses rely on neutron diffusion theory.
+
+Neutron diffusion-based solvers may be augmented with transport-derived techniques to improve
+solution accuracy. The multilevel \gls{QD} method is one such technique that involves the
+generating closure terms, known as Eddington tensors, from high-order neutron transport iterations
+that feed into low-order multigroup and one-group \gls{QD} equations
+\cite{goldin_quasi-diffusion_1964, anistratov_solution_1986}. This method has been applied to 1-D
+time-dependent and 2-D steady-state multiphysics problems \cite{tamang_multilevel_2014,
+reynolds_analysis_2023} by iteratively coupling the heat transfer equations to the low-order
+one-group \gls{QD} equations, thereby creating an efficient multiphysics coupling scheme. This
+method remains computationally intensive for large 3-D problems because it retains the
+computational cost of a full-core $S_N$ calculation.
+
+Computational costs can be lowered through domain decomposition schemes.
+The multischeme method, implemented in the Griffin reactor physics application
+\cite{yang_development_2022}, limits the computational costs of neutron transport calculations
+by dividing the problem domain
+into subdomains treated using the $S_N$, $P_N$, or neutron diffusion methods. Neutron transport
+methods are typically applied near strong neutron absorbers and highly dissimilar material
+interfaces where the neutron flux exhibits strong angular dependence. The neutron diffusion method
+is applied in the remaining subdomains to reduce computational cost. Adjoining subdomains are
+coupled through
+Lagrange multiplier interface conditions or the upwinding method applied to neutron surface
+currents. Anistratov \& Stehle \cite{anistratov_computational_2012} developed an adaptive domain
+decomposition scheme that uses Eddington tensor estimates as a metric for deducing whether a region
+is sufficiently diffusive characteristics. It combines high-order $S_N$ equations with low-order
+second-moment equations from the Second-Moment method \cite{lewis_comparison_1976} to account for
+transport effects in non-diffusive regions. The low-order equations reduce to the neutron diffusion
+equations without high-order closures in diffusive regions and naturally enforce flux continuity
+across subdomain interfaces.
+
+This paper introduces a new hybrid $S_N$-diffusion neutronics method that also employs domain
+decomposition to leverage accurate control rod modeling capabilities of the $S_N$ neutron transport
+method while simultaneously retaining the computational efficiency of the neutron diffusion method.
+The computationally expensive $S_N$ method problem domain is limited to small subdomains
+encompassing the control rods similar to how the multischeme method is used in Griffin. The
+hybrid neutronics implementation adopts an iterative two-level structure similar to the method by
+Anistratov \& Stehle with a novel adaptive interface coupling between the $S_N$ and neutron
+diffusion subdomains. We implemented this hybrid $S_N$-diffusion method in Moltres
+\cite{lindsay_moltres_2017, park_verification_2022}, an open-source multiphysics reactor simulation
+software developed for \gls{MSR} modeling. The results demonstrate the accuracy of the hybrid
+$S_N$-diffusion method on progressively complex 1-D, 2-D, and 3-D neutronics problems modeled after
+the \gls{MSRE} reactor which operated at \gls{ORNL} during the 1960s.
+
+TODO: Add outline
+
+%\section{Research Objectives and Outline}
+%
+%The overarching goal of this work is to improve on Moltres as a reliable, intermediate-fidelity
+%simulation tool for multiphysics \gls{MSR} analysis that can be run on workstations as well as on
+%large leadership-class computing clusters. Thus, new and existing capabilities in Moltres must
+%be accurate within accepted bounds, rigorously verified, computationally efficient, and highly
+%scalable. These conditions form the underlying development principles of this work.
+%
+%The scope of this dissertation can be divided into two main objectives.
+%
+%    The second objective is to develop, implement, and demonstrate a novel hybrid $S_N$-diffusion
+%    method for accurate control rod modeling in
+%    time-dependent \gls{MSR} analyses. The hybrid method uses the discrete ordinates ($S_N$)
+%    neutron transport method to generate transport corrections in regions near control rods for
+%    drift correction terms in modified neutron diffusion equations. The $S_N$ method is applied on
+%    a reduced problem domain to ensure the hybrid method remains tractable on small to moderate
+%    computing clusters.
+%
+%Chapter 2 presents a literature review of existing multiphysics \gls{MSR} simulation software,
+%\gls{VV} studies on \gls{MSR} modeling and simulation, turbulence modeling in \gls{MSR} systems,
+%and transport-correction techniques for neutron diffusion methods.
+%Chapter 3 provides an in-depth description of Moltres and its existing capabilities in the context
+%of previously published work. This chapter then presents Moltres \gls{VV} results for the CNRS
+%benchmark and the numerical \gls{MSRE} zero-power pump experiment studies. Following these studies,
+%the chapter presents the implementation and verification of the Spalart-Allmaras turbulence model
+%in Moltres.
+%Chapter 4 presents the theory and numerical implementation of the hybrid
+%$S_N$-diffusion method in Moltres. These include the $S_N$ method implementation, the transport
+%correction formulations, the iteration algorithm, the $S_N$-diffusion coupling implementation, and
+%general implementation details relating to the underlying numerical solver in Moltres.
+%Chapter 5 presents the verification and demonstration of the hybrid $S_N$-diffusion method for
+%$k_\text{eff}$ and rod worth calculations through
+%$k$-eigenvalue simulations of 1-D, 2-D, and 3-D \gls{MSRE} models. The hybrid method is verified
+%against reference results from OpenMC Monte Carlo neutron transport code and \gls{MSRE}
+%experimental data.
+%Chapter 6 presents a demonstration of the hybrid $S_N$-diffusion method in a time-dependent
+%reactivity-initiated simulation modeling a \gls{MSRE} rod drop experiment.
+%Chapter 7 concludes this dissertation by summarizing the results presented, identifying limitations
+%in this work, and providing potential research directions to address those limitations or extend
+%this work.
