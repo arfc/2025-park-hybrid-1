@@ -5,13 +5,13 @@ modeling. The hybrid $S_N$-diffusion method improves on the standard neutron dif
 iteratively applying transport corrections generated from solving the $S_N$ neutron transport
 method in subdomains containing highly neutron-absorbing control rods. The hybrid method uses the
 \gls{SAAF} formulation of the $S_N$ equations, which are highly efficient and
-scalable with HYPRE multigrid preconditioners \cite{hypre_hypre_2022} from PETSc.
-Drift closure terms computed from the $S_N$ transport solution are passed as transport corrections
+scalable with HYPRE multigrid preconditioners \cite{hypre_hypre_2022} from PETSc. Moltres passes
+drift closure terms computed from the $S_N$ transport solution as transport corrections
 in modified forms of the neutron diffusion equations to correct flux errors in near control rods
 where diffusion theory is not valid. This work also developed
 an adaptive boundary coupling algorithm to couple the $S_N$ and neutron diffusion solvers. The
-algorithm automatically truncates transport correction parameters near the boundaries of the
-$S_N$ problem subdomain to discard inaccurate correction parameters and preserve smooth neutron
+algorithm automatically truncates transport correction parameters near the $S_N$ problem subdomain
+boundaries to discard inaccurate correction parameters and preserve smooth neutron
 flux gradients across the interface. The $S_N$ and diffusion solvers are coupled through fixed
 point iterations using the \gls{MOOSE} \texttt{MultiApp} and \texttt{Transfers} systems.
 
@@ -22,13 +22,13 @@ models derived from the \gls{MSRE} reactor.
 %structure, and vessel regions in the \gls{MSRE}.
 Simulations with the OpenMC Monte Carlo neutron
 transport code and the $S_8$ method in Moltres provided reference solutions for the hybrid and
-neutron diffusion methods to be assessed against. Some discrepancies arose from the eight neutron
-energy group structure as evidenced by differences in $k_\text{eff}$ and flux distributions between
+neutron diffusion methods to be assessed against. Discrepancies arose from the eight neutron
+energy group structure, evidenced by differences in $k_\text{eff}$ and flux distributions between
 OpenMC simulations on continuous energy (OpenMC-CE) and multigroup (OpenMC-MG) modes. Otherwise,
-the multigroup $S_8$ method showed good agreement with OpenMC-MG. Although $k_\text{eff}$ estimates
+the multigroup $S_8$ method showed agreed well with OpenMC-MG. Although $k_\text{eff}$ estimates
 from the hybrid method deviated from the $S_8$ method and OpenMC-MG by 100-400 pcm, the hybrid
 method accurately reproduced control rod worth estimates within 0.5 \% of them (2-3 \% relative to
-OpenMC-CE). In comparison, the neutron diffusion method fared significantly worse at 5.5 \%
+OpenMC-CE). In comparison, the neutron diffusion method fared worse at 5.5 \%
 relative to $S_8$ and OpenMC-MG, and 8 \% relative to OpenMC-CE. Our analyses showed little impact
 on control rod worth estimates from varying the $S_N$-resolved subdomain size as long as the size
 is kept constant between $k$-eigenvalue simulations used to calculate the rod worth. The hybrid
@@ -39,14 +39,14 @@ iterations.
 The hybrid method maintained its accurate control rod modeling capability in 2-D simulations
 involving incremental insertions of three control rods in the \gls{MSRE} model.
 The hybrid method reported rod worth error magnitudes of less than 40 pcm relative to OpenMC-CE,
-which were significant improvements over the neutron diffusion method error estimates ranging from
-569 pcm to 1484 pcm. The hybrid method also showed significant improvements in the absolute mean
+which were marked improvements over the neutron diffusion method error estimates ranging from
+569 pcm to 1484 pcm. The hybrid method also showed improvements in the absolute mean
 and maximum errors in fuel channel power distributions over the neutron diffusion method.
 
 An extension to this work would be to resolve the discrepancies that persist in the hybrid method
 $k_\text{eff}$ estimates of individual reactor states. Neutron leakage error at the external
-boundaries is likely the most significant source of discrepancy and could be reduced through known
-neutron leakage correction techniques such as group-wise or matrix albedo boundary conditions.
+boundaries is likely the primary source of discrepancy, and known neutron leakage
+correction techniques, such as group-wise or matrix albedo boundary conditions, could reduce it.
 Further work is ongoing for the demonstration and performance characterization of the hybrid method
 in $k$-eigenvalue and transient 3-D \gls{MSRE} simulations. Transient simulations under active
 study include the zero-power rod drop and fractional-power reactivity insertion experiments

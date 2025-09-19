@@ -1,17 +1,17 @@
 \begin{abstract}
-Modeling and simulating control rods requires high-fidelity neutronics methods to accurately
-capture the strong angular dependence in the local neutron flux. However, high-fidelity methods
-remain too computationally expensive for time-dependent reactor analyses without extensive
-computational resources. This work introduces a novel hybrid $S_N$-diffusion method for accurate
-and computationally efficient control rod neutronics modeling in molten salt reactors.
+High-fidelity neutronics methods are necessary to accurately model and simulate control rods by
+accurately capturing the strong angular effects in the neutron flux. However, high-fidelity methods
+are computationally expensive for time-dependent reactor analyses without extensive
+computational resources. This work introduces a novel hybrid $S_N$-diffusion method for accurately
+and computationally efficiently modeling control rod neutronics in molten salt reactors.
 The hybrid method combines the strengths of the $S_N$ and neutron diffusion methods by generating
 transport corrections using the $S_N$ method near control rods while keeping computational costs
-low elsewhere. The $S_N$ and neutron diffusion solvers are coupled
-through an adaptive boundary coupling algorithm that allows the solver to adapt to the
+low elsewhere. An adaptive boundary coupling algorithm couples the $S_N$ and neutron diffusion
+solvers that allows the hybrid method to adapt to the
 transport correction parameters and preserve smooth neutron flux gradients across the interface.
 In 1-D and 2-D $k$-eigenvalue simulations, the hybrid method produced accurate control
 rod worth estimates relative to reference Monte Carlo neutron transport solutions.
 With the hybrid method's spatial resolution and efficient computational performance, the hybrid
-method could provide a viable pathway to accurate and cost-efficient numerical simulations
+method could enable accurate and cost-efficient numerical simulations
 of asymmetric transients in molten salt reactors.
 \end{abstract}

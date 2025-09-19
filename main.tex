@@ -1,17 +1,13 @@
-\documentclass[review]{elsarticle}
+% Document template for ANS Journals
+% Options: footnoteAtEnd - Places all footnotes at the end of document
+%               Usage: \documentclass[footnoteAtEnd]{style/nseJournal}
+\documentclass{style/nseJournal}
 
 \usepackage{multirow}
 \usepackage{lineno}
 \usepackage{xspace}
 \usepackage{threeparttable}
 \modulolinenumbers[5]
-
-%% Journal name here
-\journal{Annals of Nuclear Energy}
-
-%% `Elsevier LaTeX' style
-\bibliographystyle{elsarticle-num}
-%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% packages and definitions (optional)
 \usepackage{placeins}
@@ -32,9 +28,6 @@
 \usepackage{subcaption}
 \usepackage{siunitx}
 
-%% Special typesetting for Cyclus
-\newcommand{\Cyclus}{\textsc{Cyclus}\xspace}%
-\newcommand{\Cycamore}{\textsc{Cycamore}\xspace}%
 \graphicspath{{images/}}
 
 % tikz %
@@ -52,53 +45,44 @@
 \tikzstyle{solver} = [rectangle, rounded corners, thick, minimum width=3cm, minimum height=1.5cm, text centered, draw=black, fill=illiniblue, text width=7em]
 \tikzstyle{bound} = [rectangle, rounded corners, thick, draw=black]
 
-% hyperref %
-\usepackage[hidelinks]{hyperref}
-% after hyperref %
+%% hyperref %
+%\usepackage[hidelinks]{hyperref}
+%% after hyperref %
 \usepackage{cleveref}
 \usepackage{datatool}
 \usepackage[acronym,toc]{glossaries}
 \include{acros}
 
-\makeglossaries
-
 \begin{document}
-\begin{frontmatter}
-\title{A Hybrid $S_N$-Diffusion Neutronics Method for Control Rod Modeling}
 
-%\date{}                     % uncomment if you don't need date to appear
+\title{Hybrid $S_N$-Diffusion Neutronics Method for Control Rod Modeling in Molten Salt Reactors} %title of paper
 
-% Authors
 \input{authors}
-
-% Institutes of the authors
 \input{institutions}
+\addKeyword{hybrid $S_N$-diffusion method}
+\addKeyword{deterministic neutron transport}
+\addKeyword{control rod modeling}
+\addKeyword{molten salt reactors}
+\addKeyword{reactor physics}
 
-\begin{keyword}
-hybrid $S_N$-diffusion method \sep
-deterministic neutron transport \sep
-control rod modeling \sep
-molten salt reactors \sep
-reactor physics
-\end{keyword}
+\titlePage
 
 \input{abstract}
-\end{frontmatter}
-\glsresetall
-
-%% Shows line numbers
-\linenumbers
-
 \input{introduction}
 \input{hybrid}
 \input{msre}
 \input{conclusion}
 
+\pagebreak
+\section*{Acknowledgments}
+
+\pagebreak
+\bibliographystyle{style/ans_js}                                                                           %custom ANS journal submission template bibliography style
 \bibliography{bibliography}
 
-% Prof. Huff discourages appendices in journal articles.
-% But, if you must, include one like so:
 \pagebreak
 \input{appendix}
 
 \end{document}
+
+
