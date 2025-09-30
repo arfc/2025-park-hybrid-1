@@ -48,8 +48,6 @@ discretization reveal its impact on the neutron flux distributions and $k_\text{
 
 \subsection{Neutronics Modeling Setup}
 
-\subsubsection{Group Constant Data Generation on OpenMC} \label{sec:msre-gc}
-
 Deterministic neutron diffusion and $S_N$ neutron transport methods require group constant data in
 the form of group-averaged macroscopic neutron cross sections, neutron speeds, and delayed neutron
 precursor data.
@@ -148,8 +146,6 @@ temperature of 900 K unless otherwise stated. Sections \ref{sec:1d-model-setup} 
 \ref{sec:2d-model-setup} provide detailed information pertaining
 specifically to the 1-D and 2-D model geometries, respectively.
 
-\subsubsection{Neutronics Methods} \label{sec:nts-methods}
-
 Besides generating group constants for the deterministic methods, OpenMC also provides reference
 netruon flux and $k_\text{eff}$ values for all studied cases. OpenMC can run in continuous-energy
 (OpenMC-CE) and multigroup (OpenMC-MG) modes. Table
@@ -236,7 +232,7 @@ Mesh element sizes approximately halve with each successive refinement level up 
 Figures \ref{fig:diff-mesh-k} and \ref{fig:sn-mesh-k} show the convergence of $k_\text{eff}$
 estimates observed for Case 3b simulations with neutron diffusion and $S_8$ neutron transport
 methods. The $k_\text{eff}$ values plateau at 0.97132 and 0.98138 for the neutron diffusion and
-$S_8$ methods, respectively. After two rounds of mesh refinements, both methods fall within
+$S_8$ methods, respectively. After two rounds of mesh refinements for Case 3b, both methods fall within
 $5\times 10^{-7}$ range of the reference $k_\text{eff}$ values, below the 0.1 pcm ($10^{-5}$)
 tolerance value for determining solution convergence.
 
@@ -383,9 +379,8 @@ method provides significant improvements in rod worth estimates over the neutron
 
 %\subsubsubsection{Neutron flux distribution}
 
-The next discussion on the neutron flux distributions focuses on Cases 3a and 3b which most closely
-resemble the actual \gls{MSRE} reactor geometry. Cases 3a and 3b resemble the \gls{MSRE} reactor
-with a control rod withdrawn and inserted, respectively.
+Further discussion in this section focuses on Cases 3a and 3b, which closely resemble the
+actual \gls{MSRE} reactor with a control rod withdrawn and inserted, respectively.
 %
 %Figures \ref{fig:3a-flux} and
 %\ref{fig:3b-flux} show the neutron group flux distributions for Cases 3a and 3b from OpenMC-CE and
@@ -700,10 +695,6 @@ drift correction parameters for the coupled diffusion solver.
 %\FloatBarrier
 
 \subsubsection{2-D Numerical Results \& Discussion} \label{sec:2d-nts-results}
-
-This subsection presents the results and discussion of the 2-D quarter-core and full-core models.
-
-%\subsubsubsection{2-D Quarter-Core}
 
 Table \ref{table:quarter-core} details the $k_\text{eff}$ and control rod worth estimates and error
 values relative to OpenMC-CE. For the ``No Rod'' case, OpenMC-CE estimated the $k_\text{eff}$ to be
