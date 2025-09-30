@@ -1,11 +1,11 @@
 \section{The Hybrid $S_N$-Diffusion Method} \label{sec:hybrid}
 
-This section introduces the hybrid $S_N$-diffusion neutronics method to improve control rod
-modeling accuracy. In essence, the hybrid method is an iterative method that applies
-the $S_N$ discrete ordinates neutron transport method on subdomains containing the control rod to
-generate pointwise transport corrections for the neutron diffusion method.
-This section presents the mathematical formulation of the
-\gls{SAAF} formulation of the $S_N$ equations and the drift transport correction term for the
+The hybrid method is an iterative method that applies the $S_N$ discrete ordinates neutron
+transport method on subdomains containing the control rod to generate pointwise transport
+corrections for the neutron diffusion method. It consists of an $S_N$ neutron transport solver and
+a neutron diffusion solver iteratively coupled through transport correction and boundary flux
+terms. This section presents mathematical formulations of the
+\gls{SAAF} $S_N$ equations and the drift transport correction term for the
 neutron diffusion equations, and the computational algorithm for the hybrid method.
 
 \subsection{Self-Adjoint Angular Flux (SAAF) $S_N$ Method} \label{sec:saaf}
@@ -196,9 +196,9 @@ We apply integration by parts on the streaming term to obtain
 %
 where $\mathbb{L}^*$ is the adjoint of $\mathbb{L}$.
 
-Wang et al.\ \cite{wang_diffusion_2014} modified the standard \gls{SAAF} formulation by applying
-the \gls{SUPG} stabilization technique in near-void regions \cite{brooks_streamline_1982} to obtain
-the following form:
+We apply the \gls{SUPG} stabilization technique \cite{brooks_streamline_1982} for numerical
+stability in near-void regions, first applied to \gls{SAAF} $S_N$ equations by Wang et al.\
+\cite{wang_diffusion_2014}, to obtain a modified formulation as follows
 %
 \begin{multline}
   \left(\mathbb{L}_1\bm{\Psi}^*,
@@ -321,10 +321,10 @@ The weak forms of the vacuum boundary, boundary source, and reflecting boundary 
   \mbox{Vacuum } =
   \begin{cases}
     \sum^G_{g=1}\sum^{N_d}_{d=1}w_d\left(\Psi^*_{g,d},
-    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)_{\partial\mathcal{D}},
-    & \hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D} \\
-    0,
-    & \hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}
+    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)_{\partial\mathcal{D}}
+    & \forall\hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D} \\
+    0
+    & \forall\hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}
   \end{cases},
 \end{gather}
 %
@@ -332,11 +332,11 @@ The weak forms of the vacuum boundary, boundary source, and reflecting boundary 
   \vcenter{\hbox{\shortstack{Boundary \\ source }}} =
   \begin{cases}
     \sum^G_{g=1}\sum^{N_d}_{d=1}w_d\left(\Psi^*_{g,d},
-    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)_{\partial\mathcal{D}},
-    & \hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D} \\
+    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)_{\partial\mathcal{D}}
+    & \forall\hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D} \\
     \sum^G_{g=1}\sum^{N_d}_{d=1}w_d\left(\Psi^*_{g,d},
-    \hat{\Omega}_d\cdot\hat{n}_b\Psi^\text{inc}_{g,d}\right)_{\partial\mathcal{D}},
-    & \hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}
+    \hat{\Omega}_d\cdot\hat{n}_b\Psi^\text{inc}_{g,d}\right)_{\partial\mathcal{D}}
+    & \forall\hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}
   \end{cases}, \label{eq:boundary-source}
 \end{gather}
 %
@@ -344,11 +344,11 @@ The weak forms of the vacuum boundary, boundary source, and reflecting boundary 
   \mbox{Reflecting } =
   \begin{cases}
     \sum^G_{g=1}\sum^{N_d}_{d=1}w_d\left(\Psi^*_{g,d},
-    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)_{\partial\mathcal{D}},
-    & \hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D}_s \\
+    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d}\right)
+    & \forall\hat{\Omega}\cdot\hat{n}_b>0,\vec{r}\in\partial\mathcal{D}_s \\
     \sum^G_{g=1}\sum^{N_d}_{d=1}w_d\left(\Psi^*_{g,d},
-    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d_r}\right)_{\partial\mathcal{D}},
-    & \hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}_s
+    \hat{\Omega}_d\cdot\hat{n}_b\Psi_{g,d_r}\right)
+    & \forall\hat{\Omega}\cdot\hat{n}_b<0,\vec{r}\in\partial\mathcal{D}_s
   \end{cases}, \label{eq:reflecting-bc}
   \shortintertext{where}
   \hat{\Omega}_{d_r} = \hat{\Omega}_d - 2(\hat{\Omega}_d\cdot\hat{n}_b)\hat{n}_b = \mbox{ direction
@@ -482,7 +482,7 @@ to simplify the balance equation. We also introduce the diffusion operator
 and recognize that under the diffusion approximation, the vacuum boundary condition is given as
 %
 \begin{gather}
-  -\mathbb{D}\nabla\bm{\Phi}\cdot\hat{n}_b = \frac{\bm{\Phi}}{2}, \hspace{1cm} \vec{r}\in\partial
+  -\mathbb{D}\nabla\bm{\Phi}\cdot\hat{n}_b = \frac{\bm{\Phi}}{2} \hspace{0.5cm} \forall\vec{r}\in\partial
   \mathcal{D}_v.
 \end{gather}
 %
@@ -623,7 +623,7 @@ $\Psi^\text{inc}_{g,d}$, in Eq.\ \ref{eq:boundary-source} to
 %
 \begin{gather}
   \Psi^\text{inc}_{g,d} = \frac{1}{w}
-  \left(\phi^\text{diff}_g-3\hat{\Omega}_d\cdot D_g\nabla\phi^\text{diff}_g\right)
+  \left(\phi^\text{diff}_g-3\hat{\Omega}_d\cdot D_g\nabla\phi^\text{diff}_g\right).
 \end{gather}
 
 \subsection{Buffer Region} \label{sec:buffer-region}
@@ -649,11 +649,10 @@ diffusion calculation on $V_0$ will only apply transport corrections in $V_1$ ex
 In this discussion thus far, we have yet to establish the cutoff boundary for $V_1'$ within $V_1$
 opposite to $\partial V_1$. A natural/intuitive criterion for the location of the cutoff boundary
 would be where the components of the drift correction variable $\vec{D}_g$ become zero (i.e.,
-where the components change signs). This criterion are two reasons. Firstly, at
-points where the $\vec{D}_g$ components are zero, the flux is approximately isotropic along the
-corresponding axes because $\vec{D}_g$ represents the correction a
-standard neutron diffusion model requires. Secondly, this choice preserves the
-neutron flux and flux gradient smoothness.
+where the components change signs). At these locations, the flux is approximately isotropic along
+the axes corresponding to the components because value of $\vec{D}_g$ represents how much
+correction a standard neutron diffusion model requires. This criterion also preserves the
+smoothness of the neutron flux and flux gradient.
 %
 \begin{figure}[b]
 	\centering
@@ -662,8 +661,8 @@ neutron flux and flux gradient smoothness.
 	\label{fig:3b-geometry}
 \end{figure}
 
-Here, we use Case 3b of the 1-D test cases to be covered in Section \ref{sec:msre} to illustrate
-the buffer region and the behavior of $\vec{D}_g$. Case 3b is a 1-D heterogeneous slab problem
+Here, we use a case from the 1-D test cases to be covered in Section \ref{sec:msre} to illustrate
+the buffer region and the behavior of $\vec{D}_g$. This case, Case 3b, is a 1-D heterogeneous slab problem
 consisting of control rod, air, fuel-graphite repeating lattice, and reactor vessel regions as
 shown in Figure \ref{fig:3b-geometry}. The fuel regions constitute neutron-multiplying media
 containing $^\text{235}$U fissile material. The material compositions of each region are from the
@@ -707,7 +706,7 @@ energy groups and coordinate axes.
 This section details the numerical implementation of the hybrid $S_N$-diffusion method with
 drift correction terms in Moltres.
 
-Moltres \cite{lindsay_moltres_2017} is an open-source multiphysics reactor simulation software
+Moltres \cite{lindsay_introduction_2018} is an open-source multiphysics reactor simulation software
 developed for \gls{MSR} analysis. It is built on the \gls{MOOSE} open-source finite-element
 framework \cite{giudicelli_30_2024}, which facilitates multiphysics coupling with different
 \gls{MOOSE}-based and \gls{MOOSE}-wrapped applications. We implemented the hybrid $S_N$-diffusion
@@ -766,8 +765,8 @@ each outer (fixed point) iteration comprises of an inner $S_N$ calculation on th
 subregion and an inner neutron diffusion calculation on the entire domain. The \gls{FEM} algorithm
 in Moltres determines an individual solver reaches convergence when the combined
 residual contributions fall below a specified convergence tolerance threshold. The fixed point
-iteration scheme in the \texttt{MultiApps} system for coupling multiple individual
-solvers (referred to as apps) requires users to specify a main app for the final convergence check
+iteration scheme in the \texttt{MultiApps} system for coupling multiple individual solvers
+(referred to as apps) requires users to specify a primary app for the final convergence check
 after each outer iteration to terminate the iterations. The scheme also requires users to set a
 fixed point convergence tolerance value independent of the tolerance values of each individual
 solver. Naturally, the fixed point tolerance value must be equal to or greater than the tolerance
