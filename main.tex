@@ -24,6 +24,7 @@
 \usepackage{bm}
 \usepackage{subcaption}
 \usepackage{siunitx}
+\allowdisplaybreaks
 
 \graphicspath{{images/}}
 
@@ -48,9 +49,9 @@
 \usepackage{cleveref}
 \usepackage{datatool}
 \usepackage[acronym,toc]{glossaries}
-\include{acros}
 
 \begin{document}
+\include{acros}
 
 \title{Hybrid $S_N$-Diffusion Neutronics Method for Control Rod Modeling in Molten Salt Reactors} %title of paper
 
@@ -72,6 +73,7 @@
 
 \pagebreak
 \section*{Acknowledgments}
+\input{acks}
 
 \pagebreak
 \bibliographystyle{style/ans_js}                                                                           %custom ANS journal submission template bibliography style

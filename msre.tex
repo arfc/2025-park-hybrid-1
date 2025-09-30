@@ -415,7 +415,7 @@ method, shown by generally smaller per-group flux deviations particularly near $
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=\columnwidth]{case-3a-flux-diff}
+  \includegraphics[width=.85\columnwidth]{case-3a-flux-diff}
   \caption{Absolute difference in neutron group flux distributions for Case 3a from Moltres-$S_8$,
   Moltres-diffusion, and Moltres-hybrid relative to OpenMC-MG.}
   \label{fig:3a-flux-diff}
@@ -423,7 +423,7 @@ method, shown by generally smaller per-group flux deviations particularly near $
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=\columnwidth]{case-3b-flux-diff}
+  \includegraphics[width=.85\columnwidth]{case-3b-flux-diff}
   \caption{Absolute difference in neutron group flux distributions for Case 3b from Moltres-$S_8$,
   Moltres-diffusion, and Moltres-hybrid relative to OpenMC-MG.}
   \label{fig:3b-flux-diff}
@@ -453,7 +453,7 @@ zero (refer to Section \ref{sec:buffer-region}).
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=.99\columnwidth]{case-3b-drift}
+  \includegraphics[width=.85\columnwidth]{case-3b-drift}
   \caption{Multigroup drift correction ($\vec{D}_g$) $x$-component distributions from the
   Moltres-hybrid and Moltres-$S_8$ solvers.}
   \label{fig:3b-drift}
@@ -467,7 +467,7 @@ zero (refer to Section \ref{sec:buffer-region}).
 %  \label{fig:3b-svdc}
 %\end{figure}
 
-\FloatBarrier
+%\FloatBarrier
 
 %\subsubsubsection{Impact of correction subregion sizes}
 
@@ -594,10 +594,6 @@ number of outer iterations from 2 to 3.
 
 \subsection{2-D Neutronics Models \& Results} \label{sec:2d-results}
 
-This section presents the models, results, and discussion of the 2-D cases. Section
-\ref{sec:2d-model-setup} describes the model setup of the 2-D cases. Section
-\ref{sec:2d-nts-results} covers the results and discussion of the 2-D cases.
-
 \subsubsection{2-D Neutronics Model Setup} \label{sec:2d-model-setup}
 
 Figures \ref{fig:1/4-geom} and \ref{fig:full-geom} show the 2-D quarter-core and full-core
@@ -665,25 +661,25 @@ Other than providing a close-up view of the core center, Figure \ref{fig:full-ge
 presents the correction subregion on which the $S_8$ subsolver of the hybrid method generates
 drift correction parameters for the coupled diffusion solver.
 
-\begin{figure}[p]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=\columnwidth]{quarter-core-geom}
+  \includegraphics[width=.8\columnwidth]{quarter-core-geom}
   \caption{2-D \gls{MSRE} quarter-core model based on the horizontal cross section of the actual
   \gls{MSRE} geometry.}
   \label{fig:1/4-geom}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=\columnwidth]{full-core-geom}
+  \includegraphics[width=.8\columnwidth]{full-core-geom}
   \caption{2-D \gls{MSRE} full-core model based on the horizontal cross section of the actual
   \gls{MSRE} geometry.}
   \label{fig:full-geom}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=0.7\columnwidth]{full-core-closeup}
+  \includegraphics[width=0.45\columnwidth]{full-core-closeup}
   \caption{Detailed view of the control rod thimbles and sample basket in 2-D \gls{MSRE} full-core
     model.}
   \label{fig:full-geom-closeup}
@@ -729,26 +725,6 @@ The OpenMC-CE and OpenMC-MG rod worth estimates agree within two standard deviat
   \label{table:quarter-core}
 \end{table}
 
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=\columnwidth]{msre-quarter-no-rod-power}
-  \caption{Normalized channel fission rate distribution of the 2-D \gls{MSRE} quarter-core model
-    with the rod withdrawn.
-  This figure depicts the 1/8th-core distribution due to symmetry about the diagonal.}
-  \label{fig:1/4-no-rod}
-\end{figure}
-
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=\columnwidth]{msre-quarter-rod-power}
-  \caption{Normalized channel fission rate distribution of the 2-D \gls{MSRE} quarter-core model
-    with the rod inserted.
-  This figure depicts the 1/8th-core distribution due to symmetry about the diagonal.}
-  \label{fig:1/4-rod}
-\end{figure}
-
-\FloatBarrier
-
 We calculated the normalized channel fission rate distribution by integrating the fission rate
 within each fuel salt channel and normalizing the values such that the integrated fission rate in
 each channel averages to 1 as follows
@@ -774,6 +750,24 @@ depicted in Figure \ref{fig:1/4-geom}. The lattice also provides a guide for sub
 annular fuel regions around the control rod thimbles. The fission rate
 distributions omit four channels along the outer edge due to the proximity to peripheral annular
 fuel regions and the consequent difficulty in accurately tallying fission rates.
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.99\columnwidth]{msre-quarter-no-rod-power}
+  \caption{Normalized channel fission rate distribution of the 2-D \gls{MSRE} quarter-core model
+    with the rod withdrawn.
+  This figure depicts the 1/8th-core distribution due to symmetry about the diagonal.}
+  \label{fig:1/4-no-rod}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.99\columnwidth]{msre-quarter-rod-power}
+  \caption{Normalized channel fission rate distribution of the 2-D \gls{MSRE} quarter-core model
+    with the rod inserted.
+  This figure depicts the 1/8th-core distribution due to symmetry about the diagonal.}
+  \label{fig:1/4-rod}
+\end{figure}
 
 In the ``No Rod'' case, the peak channel fission rate occured several channels away from the
 physical center of the reactor core. The presence of the empty (air-filled) rod thimble depressed
@@ -908,10 +902,9 @@ asymmetric rod configurations.
 %\subsubsubsection{$S_N$ Discretization \& Ray Effects}
 
 Angular resolution in 2-D (and later 3-D) flux simulations is important for accurately capturing
-the angular dependence in the neutron angular flux. This subsection compares the $k_\text{eff}$ and
-neutron scalar flux distribution solutions from the hybrid method with the $S_6$, $S_8$, $S_{10}$,
-and $S_{12}$ methods for the 2-D full-core with no rods inserted. Table
-\ref{table:2d-sn-convergence} shows the $k_\text{eff}$ estimates from those simulation results.
+the angular dependence in the neutron angular flux. Table \ref{table:2d-sn-convergence} shows the
+$k_\text{eff}$ estimates from the hybrid method with the $S_6$, $S_8$, $S_{10}$, and $S_{12}$
+methods for the 2-D full-core with no control rods inserted.
 The $k_\text{eff}$ varied by less than 1 pcm, thereby indicating the angular discretization
 order used by the hybrid method had little impact on the integral reactor parameters.
 
@@ -920,7 +913,7 @@ distributions from the hybrid method in the central reactor region consisting of
 air-filled thimbles and a homogenized sample basket (bottom right). The geometry corresponds
 directly to Figure \ref{fig:full-geom-closeup} without the three control rods. Group 1 fluxes
 in the thimble form a distinctive ray effect artifacts arising from the regular geometrical shapes and
-insufficient angular resolution. The artifacts become less distinct with increased angular
+insufficient angular resolution. The artifacts diminish with increased angular
 discretization levels. They also diminish with increasing neutron energy groups due to shorter
 neutron mean free paths leading to more diffusive behavior.
 
