@@ -1,14 +1,13 @@
 \section{Introduction}
 
 \glspl{MSR} exhibit unique safety characteristics stemming from their large fuel expansion
-reactivity coefficients and large margin-to-boiling from the liquid fuel form of uranium halides
-dissolved in molten salt coolant \cite{dolan_1_2017}.
-The fuel form also allows for online fuel reprocessing, reducing the excess
-reactivity needed to maintain core criticality during operation. Nevertheless, control rods remain
-essential components in \glspl{MSR} for accident prevention and facilitate simpler reactor control
-procedures during start-up, shut-down, and load-following operations.
-Characterizing and accurately modeling control rod effects through time-dependent multiphysics
-simulations is important to ensure safe reactor operation.
+reactivity coefficients and large margin-to-boiling from fissile material dissolved in molten salt
+coolant \cite{dolan_1_2017}. The liquid fuel form also allows for online fuel reprocessing,
+reducing the excess reactivity and control rod worths needed to maintain core criticality during
+operation. Nevertheless, control rods remain essential components in \glspl{MSR} for accident
+prevention and operational flexibility particularly during start-up, shut-down, and load-following
+operations. Accurately modeling control rod effects in time-dependent reactor
+analyses is important to characterizing reactor responses to control rod actuation.
 
 Few existing \gls{MSR} multiphysics studies explicitly include control rods in their models. For
 instance, when modeling the \gls{MSRE} pump start-up and coast-down experiments at \gls{ORNL} which
@@ -20,8 +19,8 @@ neutron source term scaling for the transient calculations because neutron diffu
 $SP_N$ methods are inaccurate in highly neutron absorbing regions
 \cite{kophazi_development_2009, jaradat_development_2021, yang_development_2022}.
 
-Others adopted homogenization of the control rods and adjacent regions in line with
-homogenization-based neutronics methods. Kophazi et al.\ \cite{kophazi_development_2009} modeled
+Others adopted homogenization techniques of the control rods and adjacent regions.
+Kophazi et al.\ \cite{kophazi_development_2009} modeled
 control rods as homogenized hexahedrons in their 3-D Cartesian geometry of the \gls{MSRE}
 and imposed albedo boundary conditions for the thermal neutron group. Jaradat et al.\
 \cite{jaradat_development_2021} and Yang et al.\ \cite{yang_development_2022} modeled the
@@ -33,39 +32,37 @@ Obtaining a heterogeneous temperature distribution is
 crucial in \glspl{MSR} due to the combined fuel-coolant and the positive temperature
 reactivity feedback observed in graphite under certain conditions \cite{mathieu_thorium_2006}.
 
-Control rods induce highly anisotropic neutron angular fluxes and sharp gradients in the neutron
-flux in their vicinity, which presents the main difficulty in their modeling. Control rods also
-cause shifts in the neutron energy spectrum because their absorption cross sections are much higher
-in the lower neutron energy range; more energetic neutrons generally have a higher probability of
-escaping the control rod region. As a consequence, modeling control rods accurately requires
+The main factor in control rod modeling difficulties arise from the highly anisotropic neutron
+angular fluxes and sharp gradients in the neutron flux in their vicinity. Control rods also cause
+shifts in the neutron energy spectrum because they selectively absorb more neutrons in the lower
+energy range. Consequently, modeling control rods accurately requires
 high-fidelity neutron transport methods to capture the angular dependence in the neutron flux near
 the highly absorbing medium. However, neutron transport methods, such as Monte Carlo, $S_N$, and
 $P_N$ methods, incur significant computational expense and thus are mainly used for
-time-independent neutronic analyses. For time-dependent multiphysics
-simulations coupling neutronics to \gls{TH} and other physics in nuclear reactors, most
-reactor analyses rely on neutron diffusion theory.
+time-independent neutronic analyses or depletion studies that can justifiably assume that the
+reactor operates at steady state. For time-dependent multiphysics analyses dealing with short-term
+transients, most analyses rely on the neutron diffusion method or coarse-mesh transport methods.
 
-Neutron diffusion-based solvers may be augmented with transport-derived techniques to improve
-solution accuracy. The multilevel \gls{QD} method is one such technique that involves
-generating closure terms, known as Eddington tensors, from high-order neutron transport iterations
-that feed into low-order multigroup and one-group \gls{QD} equations
-\cite{goldin_quasi-diffusion_1964, anistratov_solution_1986}. Reseachers have applied this method
+Neutron diffusion solvers may be augmented with transport-derived techniques to improve
+solution accuracy. The multilevel \gls{QD} method is one such technique that
+generates closure terms, known as Eddington tensors, from high-order neutron transport iterations
+to feed into low-order multigroup and one-group \gls{QD} equations
+\cite{goldin_quasi-diffusion_1964, anistratov_solution_1986}. This method has been applied
 to 1-D time-dependent and 2-D steady-state multiphysics problems \cite{tamang_multilevel_2014,
 reynolds_analysis_2023} by iteratively coupling the heat transfer equations to the low-order
-one-group \gls{QD} equations, thereby creating an efficient multiphysics coupling scheme. This
-method remains computationally intensive for large 3-D problems because it retains the
+one-group \gls{QD} equations, thereby creating an efficient multiphysics coupling scheme. The
+method remains computationally intensive for time-dependent 3-D problems because it retains the
 computational cost of a full-core $S_N$ calculation.
 
-Domain decomposition schemes exist in the literature for lowering computational costs. The Griffin
-reactor physics application \cite{yang_development_2022} implements the multischeme method which
+Domain decomposition schemes may be used to reduce computational costs. The Griffin
+reactor physics application \cite{yang_development_2022} implements a multischeme method which
 limits the computational costs of neutron transport calculations by dividing the problem domain
-into subdomains treated using the $S_N$, $P_N$, or neutron diffusion methods. Researchers
-apply neutron transport methods near strong neutron absorber regions where the neutron flux
-exhibits strong angular dependence \cite{laboure_multischeme_2022}. The neutron diffusion method
-is applied in the remaining subdomains to reduce computational cost. Adjoining subdomains are
-coupled through
-Lagrange multiplier interface conditions or the upwinding method applied to neutron surface
-currents. Anistratov \& Stehle \cite{anistratov_computational_2012} developed an adaptive domain
+into subdomains treated using $S_N$, $P_N$, or neutron diffusion methods. Neutron transport
+methods may be applied near strong neutron absorber regions where the neutron flux
+exhibits strong angular dependence \cite{laboure_multischeme_2022} and the neutron diffusion method
+elsewhere to reduce computational cost. Adjoining subdomains are coupled through
+Lagrange multiplier interface conditions or the upwinding method applied to surface neutron
+currents. Anistratov and Stehle \cite{anistratov_computational_2012} developed an adaptive domain
 decomposition scheme that uses Eddington tensor estimates as a metric for deducing whether a region
 is sufficiently diffusive characteristics. It combines high-order $S_N$ equations with low-order
 second-moment equations from the Second-Moment method \cite{lewis_comparison_1976} to account for
@@ -73,21 +70,22 @@ transport effects in non-diffusive regions. The low-order equations reduce to th
 equations without high-order closures in diffusive regions and naturally enforce flux continuity
 across subdomain interfaces.
 
-This paper introduces a new hybrid $S_N$-diffusion neutronics method that also employs domain
+This paper introduces a hybrid $S_N$-diffusion neutronics method that also employs domain
 decomposition to leverage accurate control rod modeling capabilities of the $S_N$ neutron transport
-method while simultaneously retaining the computational efficiency of the neutron diffusion method.
-The computationally expensive $S_N$ method problem domain is limited to small subdomains
-encompassing the control rods, similar to the multischeme method in Griffin. The
-hybrid neutronics implementation adopts an iterative two-level structure similar to the method by
-Anistratov \& Stehle with a novel adaptive interface coupling between the $S_N$ and neutron
-diffusion subdomains. We implemented this hybrid $S_N$-diffusion method in Moltres
-\cite{lindsay_moltres_2017, park_verification_2022}, an open-source multiphysics reactor simulation
-software developed for \gls{MSR} modeling. The results demonstrate the accuracy of the hybrid
-$S_N$-diffusion method on progressively complex 1-D and 2-D neutronics problems modeled after
-the \gls{MSRE} reactor which operated at \gls{ORNL} during the 1960s.
+method. The problem domain for $S_N$ transport corrections to the neutron diffusion method is
+limited to small subdomains encompassing the control rods, similar to the multischeme method in
+Griffin. The hybrid neutronics implementation adopts an iterative two-level structure similar to
+the method by Anistratov and Stehle with an adaptive interface coupling between the $S_N$ and
+neutron diffusion subdomains based on the $S_N$ transport corrections. We implemented this hybrid
+$S_N$-diffusion method in Moltres \cite{lindsay_introduction_2018, park_verification_2022}, an
+open-source multiphysics reactor simulation software developed for \gls{MSR} modeling. The results
+demonstrate improved control rod worth and channel power estimates from the hybrid $S_N$-diffusion
+method over the neutron diffusion method in progressively complex 1-D and 2-D neutronics problems
+modeled after the \gls{MSRE} reactor which operated at \gls{ORNL} during the 1960s.
 
 Section \ref{sec:hybrid} details the derivation and
 numerical implementation of the hybrid $S_N$-diffusion method. Section \ref{sec:msre} presents the
-1-D and 2-D $k$-eigenvalue numerical results and discussion with the hybrid method. Section
+1-D and 2-D models, numerical results, and discussions comparing the hybrid method with
+neutron transport and neutron diffusion methods. Section
 \ref{sec:conclusion} summarizes the findings of this work and presents several ongoing and
 potential extensions to this work.

@@ -126,9 +126,11 @@
 % \address{Address\fnref{label3}}
 % \fntext[label3]{}
 
-\title{A Simple, Concise Article Title\\
+\title{Hybrid $S_N$-Diffusion Neutronics Method for Control Rod Modeling in
+        Molten Salt Reactors\\
         \large Response to Review Comments}
-\author{Firstname M. Lastname, John S. Doe, Jane S. Doe}
+\author{Sun Myung Park, Kathryn D.\ Huff, Madicken Munk}
+\date{}
 
 % use optional labels to link authors explicitly to addresses:
 % \author[label1,label2]{<author name>}
@@ -149,33 +151,384 @@ We would like to thank the reviewers for their detailed assessment of this
 paper. Your comments have resulted in changes which certainly improved the
 paper.
 
-
-\section*{Reviewer 1}
+%---------------------------------------------------------------------
+% REVIEWER 2
+%---------------------------------------------------------------------
+\section*{Reviewer 2}
 \begin{questions}
 
-        %---------------------------------------------------------------------
-        \question The color scheme in figures 4 and 7 make it difficult to
-        distinguish each individual components in the figures.
+    %--- Abstract Comments ---
+    \question (Abstract Comment) Minor comment, but I would reverse and tweak the first two sentences to better set the overall stage.
+    \begin{solution}
+        Thank you for your suggestion. We edited the two sentences as recommended.
+    \end{solution}
 
-        \begin{solution}
-        	Thank you for your valuable input. We changed the color scheme
-        	to ensure that the colors representing each component are more
-        	distinct and easier to tell apart.
+    \question (Abstract Comment) You might reconsider using the word "novel." Generations of people have done various diffusion/transport hybrid methods, for various physics applications, using diffusion where they can get away with it and transport where they have to.
+    \begin{solution}
+        We removed the word ``novel''.
+    \end{solution}
 
-        \end{solution}
+    \question (Abstract Comment) The fact that you used MOOSE as the framework for doing this should be touted, I would think. It would be interesting if you could relay some estimate of the cost to develop this capability and compare it to other known efforts. Did it save time in development, testing, validating, etc.?
+    \begin{solution}
+        We added the following sentence to the abstract: ``We implemented the hybrid method in
+        Moltres, a MOOSE-based multiphysics reactor analysis application, leveraging MOOSE's robust
+        finite-element solver infrastructure together with Moltres' existing reactor modeling
+        capabilities to reduce development time.''. We also placed greater emphasis on the benefits
+        in Section II.F Numerical Implementation.
+    \end{solution}
 
-        %---------------------------------------------------------------------
-        \question Review comment 2
-        \begin{solution}
-        	Changes for review comment 2
+    \question (Abstract Comment) The method is accurate. Is it? Most hybrid methods are designed to converge to the transport solution, but yours does not seem to. Why? The HOLO method had some issues in that the consistency terms were so expensive and difficult to calculate. Is that happening here?
+    \begin{solution}
+        We accept that the accuracy statement may be misleading and so we replaced
+        the sentence with: ``'In 1-D and 2-D $k$-eigenvalue simulations, the multigroup hybrid
+        method improved control rod worth estimates relative to the multigroup neutron diffusion
+        method.''
 
-        \end{solution}
+        If we focus solely on the subregion, the hybrid method solution converges to the equivalent
+        $S_N$ transport solution given the same subregion boundary sources as defined by Eq.\ 19
+        and 31.
 
+        This hybrid method does not converge to the transport solution in the entire problem domain
+        because the transport
+        corrections are limited only to the subregion around the control rods. Discrepancies
+        arising from uncorrected reaction rates and neutron leakage in the rest of the problem
+        domain still exist. We plan to address those discrepancies through more conventional
+        approaches such as albedo boundary conditions and SPH/discontinuity factors since these
+        existing approaches are computationally cheaper than the hybrid method and suitable for
+        fixed geometry regions.
 
-        %---------------------------------------------------------------------
+        Neutron leakage error alone accounts for about -300~pcm
+        discrepancy between the hybrid method and OpenMC-MG (multigroup) for the 1-D cases with vacuum
+        boundary conditions. Eliminating this source of error would bring our hybrid method keff
+        estimates to within $<$200~pcm range of OpenMC-MG, which would be reasonable for
+        deterministic neutronics codes used in transient multiphysics reactor analyses. Rod worth
+        estimates fall within 1\% of OpenMC-MG while the root-mean-square and maximum errors in
+        channel power distributions fall within 0.5\% and 3\%. While not perfect, these represent
+        significant improvements over the diffusion method.
+
+        We edited text in the abstract, introduction, and conclusions sections to more clearly
+        reflect the discussion points made here.
+    \end{solution}
+
+    \question (Abstract Comment) The method is computationally efficient. I did not see one mention of speedups, or any runtimes or anything related to computational cost and improvements.
+    \begin{solution}
+        We are unable to provide definitive comparisons between the hybrid and $S_N$ methods because the 1-D
+        cases were very fast ($<$2 seconds) on single processor while 2-D full-core $S_8$
+        calculations required too much memory. We are currently looking into fixes for the excessive
+        memory usage by the $S_N$ solver.
+
+        However, we are able to provide comparisons between the hybrid method and the diffusion
+        method for 2-D full-core calculations.
+        The hybrid method took approximately 4.9 times as long as the diffusion method. This should
+        be representative of 3-D calculations because the $S_N$ subsolver did not take advantage of
+        symmetries in the 2-D angular domain. We added this observation and discussion to the
+        results \& discussion section of the paper.
+    \end{solution}
+
+    \question (Abstract Comment) Adaptive boundaries. How is it adaptive? Don't you just manually set the location of the boundary? I may have missed something.
+    \begin{solution}
+        
+    \end{solution}
+
+    \question (Abstract Comment) In eigenvalue problems, keff, as an integral quantity, converges faster than, say, the eigenmode. I don't know, but it seems like control rod worth estimates might converge even faster. If so, then it is much less constraining to say that you match control rod worths than keff, which is less constraining than saying that you match the flux.
+    \begin{solution}
+        We recognize that the keff and rod worths converge faster than the spatial flux
+        distribution. We highlighted rod worth comparisons in the abstract because we are
+        developing this hybrid method for use in multiphysics MSR transient analyses involving
+        control rod motion. We have now added flux and channel power observations to the abstract.
+
+%        The results section includes keff and 2-D channel power distributions.
+%        keff discrepancies between the hybrid method and OpenMC-MG (multigroup) hover between 100
+%        and 400 pcm which goes beyond the $<$300~pcm range we aim for with a deterministic code
+%        for time-dependent simulations. We plan to address the keff discreapancies through
+%        pre-calculated correction factors such as albedo boundary conditions to correct neutron
+%        leakage errors which amount to about -300~pcm for the 1-D cases with vacuum boundary
+%        conditions.
+    \end{solution}
+
+    %--- General Comments ---
+    \question Page 15, lines 19-29: I doubt that putting a limiter on a diffusion coefficient actually increases the rate of convergence. It may improve, or enable, stability.
+    \begin{solution}
+        Thank you for catching this error. We agree that it is more precise to say the limiter
+        improves stability. We removed the statement about the rate of convergence and focused on
+        the improvement in stability.
+    \end{solution}
+
+    \question If your hybrid method is run on a problem where diffusion is perfectly adequate, do you recover the diffusion solution? It doesn't look like those results are in Figure 6, and they should be. That would be very concerning if the hybrid doesn't properly perform a no-op.
+    \begin{solution}
+        Case 2a, featuring a homogenized fuel-graphite region sandwiched by air and reflector
+        regions, shows that we can recover the diffusion solution when using the hybrid
+        method on problems where diffusion is adequate. The keff estimates from the hybrid and
+        diffusion methods are consistent with each other. Both methods deviate from OpenMC-MG and
+        $S_8$ due to neutron leakage errors on the vacuum boundary.
+    \end{solution}
+
+    \question No explicit mention of consistency in the hybrid method equations. This is important for recovering the transport solution and maintaining the diffusion solution.
+    \begin{solution}
+        Please refer to our response to Comment 4.
+    \end{solution}
+
+    \question You start out Section II.D saying that the hybrid method requires appropriate diffusion-SN boundary conditions to converge. This is a strong statement and should be backed up with more information. What level of inappropriateness causes the method to not converge? Do you have a mathematical proof? Anecdotal evidence?
+    \begin{solution}
+        We misused the word ``convergence'' here. The
+        original intent of the opening sentence is a simple statement that the $S_N$
+        subproblem requires boundary sources. We edited
+        the opening sentence to:
+        ``The $S_N$ subproblem on $V_1$ requires boundary sources along $\partial V_1$ derived from
+        the neutron diffusion solution of the previous iteration.''
+    \end{solution}
+
+    \question Figure 1 should be clarified. What does "Final ... solutions obtained" in the bottom oval mean? k wasn't mentioned above in the figure at all. Are more calculations made after convergence, or is the last iteration merely retained?
+    \begin{solution}
+      We added the missing $k^{(0)}$ and $k^{(i)}$ symbols to the figure and edited the bottom oval
+      to clarify that the last iteration is retained without any further calculations:
+      ``Output convergead $\phi_g$ and $k$ solution''.
+    \end{solution}
+
+    \question As I was reading the subsolver boundary conditions section, my expectation was that you have to place the boundary in a location where diffusion is valid, but if it is place to far into the diffusion region, you lose efficiency (but not accuracy). There was a lot of discussion about setting the buffer region, but it seems that you're simply looking for an extrapolation distance (such as used in a Marshak boundary condition, which is sometimes transport-corrected from a coefficient of 2/3 to 0.7104). If this is the case, can you make this section more concise and more mathematically rigorous?
+    \begin{solution}
+        
+    \end{solution}
+
+    \question Regarding Figure 3, I was expecting the subsolver region to extend just beyond the control rods to capture any control-rod-related transport effects that extend outward from the control rod. What does it mean that you do, or have to, go out far enough to include two fuel regions? It seems like there are transport effects at every fuel-graphite interface, which would mean that the SN subregion should be centered around the control rod and every fuel-graphite interface. I am not finding that seeing only Group 1 and 8 fluxes is enough. Can you also plot the total flux? It is not clear what motivated the selection of the buffer location. The reference D's in Figure 3 suggest that you shouldn't have stopped at 10cm, but rather set an SN subsolver around every interface.
+    \begin{solution}
+        
+    \end{solution}
+
+    \question At the end of Section II.F, you say, "...for the possibility of overall convergence." That is a very loaded term. Can you give more rigorous details of the convergence or lack of convergence?
+    \begin{solution}
+        We overhauled the entire paragraph to provide a more concise description of the convergence criteria.
+
+        New paragraph:
+
+        ``The hybrid method employs the \texttt{MultiApp} and \texttt{Transfers} systems
+        \cite{gaston_physics-based_2015} to implement fixed point iterative coupling between the $S_N$ and
+        neutron diffusion solvers for the hybrid $S_N$-diffusion method. In each fixed point iteration,
+        each solver reaches convergence when the integral residual value fall below specified convergence
+        tolerance thresholds $\epsilon_\text{tol}$. The fixed point iterations terminate when the initial
+        residual value of the neutron diffusion solver at the start of an iteration falls below another
+        specified convergence tolerance value. This signals that the $S_N$ and neutron diffusion solutions
+        have converged and remain unchanged within given tolerances relative to the previous iteration.''
+    \end{solution}
+
+    \question In Table II, under the SN Transport column, can you -- or should you -- be more specific that "discrete" for the first two rows? Like "FE" or "collocation"?
+    \begin{solution}
+        We replaced all instances of the word ``discrete'' in the table with ``FE'',
+        ``Collocation'', or ``Multigroup''.
+    \end{solution}
+
+    \question Figure 4 shows a nice progression of test problems. The 1D is slab or Cartesian, correct?
+    \begin{solution}
+        Thank you. Yes these are 1-D slab problems. We added the ``slab'' label to the revised draft.
+    \end{solution}
+
+    \question Figure 5: are the cells still in the diffusion limit as you refine the mesh?
+    \begin{solution}
+        All mesh cells at all levels of refinement are smaller than the mean free paths in all
+        regions.
+    \end{solution}
+
+    \question On page 25, line 48, you attributed reactivity discrepancies to the eight-group structure. How? Can you say more? Does it matter? Can you plot the cross-sections, comparing CE with 8-group? What would such a plot tell you? There doesn't seem to be any MG effect for cases 2b and 3b in Figure 6, except for the hybrid method. This is concerning and indicates that MG is causing some sort of problem with the hybrid method.
+    \begin{solution}
+        We clarified our reasoning for attributing reactivity discrepancies to the eight-group
+        structure by comparing OpenMC-CE (continuous) and OpenMC-MG (multigroup) results. OpenMC-MG
+        is inconsistent with OpenMC-CE in Cases 2a and 3a. The only difference between these modes
+        is the energy discretization; adding higher Legendre orders for scattering did not
+        noticeably change $k$ for OpenMC-MG. The hybrid method appears to perform worse for Cases
+        2b and 3b, but by the same reasoning, OpenMC-MG and $S_8$ perform worse for Cases 2a and
+        3a.
+
+        We also wish to highlight that evaluating the validity of the multigroup approximation is
+        not the objective of this work, which is the reason for providing OpenMC-MG results.
+    \end{solution}
+
+    \question If you could get the figures closer to where they're referenced in the text, that would be most appreciated by the readers.
+    \begin{solution}
+        Done
+    \end{solution}
+
+    \question For many of the figures in the results section, there is extensive description of what is seen in the figures. It would be more concise to refer to the figures and give interpretations of, or meaning to, the figures.
+    \begin{solution}
+        Done
+    \end{solution}
+
+    \question In Figure 8, why is the hybrid method doing better than diffusion in the diffusion regions? Shouldn't it admit the diffusion solution there? Or is it tightly coupled to the control rod subregion? Is diffusion even valid in the diffusion region? This goes back to the comment that it seems like the SN subregions should be around every interface. Conversely, why is the hybrid method not matching transport in the SN subregion?
+    \begin{solution}
+        
+    \end{solution}
+
+    \question In Figure 10, do the discrepancies indicate that the SN subregion is not properly located? Or that the SN subregion should be group-dependent?
+    \begin{solution}
+        
+    \end{solution}
+
+    \question In Figure 12, what is the meaning of the non-monotonic hybrid curve?
+    \begin{solution}
+        The non-monotonic curves in Figure 11 and 12 indicate that keff errors from
+        applying diffusion to the lattice region are spatially non-uniform. 
+        As the correction subregion size increases, it encompasses more of the fuel-graphite
+        lattice region where transport corrections are applied. The control rod region in Case 3b
+        also induces a significant spatial shift in the flux distribution and may be contributing
+        to the non-monotonic behavior.
+    \end{solution}
+
+    \question Page 33 mentioned minimizing computation cost, but there is no mention of computational cost. In Monte Carlo, a Figure of Merit of 1/[R$^2\times$ T], where R is a relative error and T is compute time, is designed to validly compare runs with different numbers of particles. However, it could be useful for you to report something like a FOM for you calculations, especially the 2D ones.
+    \begin{solution}
+        In response to Comment 5, we added computational runtime comparisons between the hybrid and
+        neutron diffusion methods. Due to existing limitations regarding $S_N$ solver memory usage,
+        we provided a lower limit estimate of $S_8$ computational costs
+        based on the fact that an $S_8$ simulation has 80$\times$ as many unknowns as a neutron
+        diffusion simulation on the same mesh.
+    \end{solution}
+
+    \question Table III seems backward to me. If I spend more time better converging an inner iteration, I would expect the outers to converge in fewer iterations. If I converge the inners only loosely, more of the work falls upon the outers and there will be more iterations overall required. The efficiency would depend on the relative cost of inner and outer iterations. This would be a good place to include computational cost or efficiency. Can you explain?
+    \begin{solution}
+        The behavior in Table III is due to how outer iteration convergence is determined in
+        MOOSE-based apps. In our response to Comment 15, we clarified that the outer iteration
+        convergence check is performed by checking whether the residual value of the neutron diffusion
+        solver falls below the fixed point tolerance value at the start of an outer iteration. If
+        we tighten $S_N$ tolerance value, the $S_N$ solver attempts to resolve the drift correction
+        terms more precisely, and in turn triggers more outer iterations to resolve the scalar
+        flux and $k$ more precisely.
+
+        This investigation on $S_N$ convergence threshold is inspired by a general observation by
+        Adams and Larsen (2002) that transport
+        correction terms depend weakly on the iterative transport solution and thus may have
+        different convergence rates. Reynolds (2023) also notes this occurring in their
+        quasidiffusion neutronics simulation of a 2-D axisymmetric MSRE model. The citations and
+        relevant discussions are included in the revised draft.
+    \end{solution}
+
+    \question Please make the discussion on pages 36-38 much more concise. The comment, "This is likely due to statistical uncertainty..." seems a little inadequate; can you investigate it and state it more rigorously? You're normalizing to the average (clear if you move the $N_i$ to the denominator as 1/$N_i$), so you don't need all the discussion.
+    \begin{solution}
+        
+    \end{solution}
+
+    \question Page 39, lines 13-17, I don't understand the comment about scalar coefficients. Can you refer to your equations or somehow make this clearer and more robust?
+    \begin{solution}
+        We were referring to the fact that the neutron diffusion method performs poorly in
+        low-scattering regions (e.g., air). The isotropic nature of diffusion results in a flat
+        flux profile in air regions with little angular variation.
+
+        We combined the sentence with the previous sentence to make it more concise:
+        ``The neutron diffusion and hybrid methods report similar percentage errors relative to
+        OpenMC-CE, except near the center where the neutron diffusion method is known to perform
+        poorly in low-scattering near-void regions.''
+    \end{solution}
+
+    \question Page 43, the sentence at the very could be made much more concise or could be more interpretive rather than repeating information from a table. You say, "is effective," but is it really? Down below, you say that increasing the number of energy groups makes the problem more diffusive - how is that? This paragraph should be more rigorous. "which clarifies"... I'm not sure that it does. Can you plot the cross sections to better make this argument?
+    \begin{solution}
+        By ``increasing energy groups'', we were referring to lower-energy groups, not increasing
+        the total number of groups. We edited this set of text to be less ambiguous and added a table
+        that lists the 8-group fission cross sections to support our reasoning. We also moved the
+        text to the beginning of the 2-D results \& discussion section for better flow.
+    \end{solution}
+
 \end{questions}
-\bibliographystyle{unsrt}
-\bibliography{revise}
+
+%---------------------------------------------------------------------
+% REVIEWER 3
+%---------------------------------------------------------------------
+\section*{Reviewer 3}
+\begin{questions}
+
+    \question On page 6, line \# 10, ``while simultaneously retaining the computational efficiency of the neutron diffusion method''. This is not correct as this method cannot ensure the same efficiency as diffusion. The method only selectively employs transport calculations in certain areas (control rods in this case) while using diffusion in other areas. If the number of control rods increases, the computational cost should be significantly higher than that of diffusion.
+    \begin{solution}
+        We have removed the quoted phrase. Please also refer to the newly added Section IV.B.4 on
+        computational performance where we compare the computational costs of neutron diffusion,
+        $S_8$, and hybrid methods.
+    \end{solution}
+
+    \question Authors asserts in Eq. (10) that operator L* is the adjoint of L. Please check whether this saying is strict in mathematics. As I understand, if L* is an adjoint of L, Eq. 10 should not contain the boundary integrals.
+    \begin{solution}
+        Thank you for highlighting this error. We replaced this with an explicit definition,
+        $L^*=-L_1+L_2$, and by explicitly showing the mathematical relation derived from
+        integration by parts.
+    \end{solution}
+
+    \question On page 13, line \#13, Nonlinear diffusion acceleration (NDA) is applied in neutron transport problems with unstructured meshes, as reported in Computers and Mathematics with Applications 170 (2024) 142-160. This paper should be cited.
+    \begin{solution}
+        I added the suggested citation to the relevant section.
+    \end{solution}
+
+    \question It would be good if authors could illustrate how Eq. (30) is derived. Phi\_g,d is the angular flux of a discretized direction d, but not a function of omega\_d. I do not quite get how the P1 truncation could be used in this case. Besides, the omega term in Eq.(31) seems like a typo.
+    \begin{solution}
+        Thank you for catching this typo. Eq.\ 30 is supposed to be the P1 approximation for
+        angular flux $\Psi_g(\vec{r},\hat{\Omega})$ along $\hat{\Omega}_d$. We edited the equation
+        to correctly refer to $\Psi_g$ instead of $\Psi_{g,d}$. We use Eq.\ 30 as the basis for
+        estimating $\Psi_{g,d}$ in Eq.\ 31 for the boundary condition in Eq.\ 19.
+    \end{solution}
+
+    \question Please explain why keff cannot converge when increasing the correction subregion size in Fig. 11. \& 12. Shouldn't the results become more accurate when more corrections are employed?
+    \begin{solution}
+        In Fig. 11 and 12, we show $k_\text{eff}$ estimates for subregion sizes ranging from 10~cm
+        to 40~cm. 1-D problem domains of Case 3a and 3b are 50~cm across. We believe that neutron
+        leakage error of 300~pcm on the right boundary is contributing to the discrepancy. Having
+        the ``subregion''
+        encompass the entire 50-cm domain would be equivalent to a full $S_8$ calculation with
+        nonlinear diffusion acceleration, which is already depicted in the figures as red lines.
+        Using the hybrid method for correcting neutron leakage at the outer boundaries is outside
+        the scope of this paper. We plan to apply albedo boundary conditions derived from
+        OpenMC/Serpent to tackle leakage errors.
+    \end{solution}
+
+    \question It would be helpful to give a schematic showing the meshes for the region, buffer region and subregion for the 2D MSRE case.
+    \begin{solution}
+        We made edits to Figures 5 and 6 to indicate the location of the subregion relative to the
+        entire problem domain.
+    \end{solution}
+
+    \question I am curious that should the meshes for subregions decided before all the calculations are performed? And how are the sizes of subregions decided? Are they decided based on the mean free path, but of which energy group?
+    \begin{solution}
+        The subregion sizes were chosen based on placing the subregion boundary at least one mean
+        free path away from the control rod and air regions. We considered mean free paths of
+        group 1 neutrons in fuel and graphite since they are the largest. We added this information
+        to Section IV.A.6 of the revised draft.
+    \end{solution}
+
+    \question Although it is seen in TABLE V that hybrid method outperforms diffusion method in terms of predicting the rod worth, but the errors are significant in keff. This seems to lower the attractiveness of the method, given the complex theory and the iterative process.
+    \begin{solution}
+        We agree with your assessment of the hybrid method in its current state. This is
+        an exploratory work that we will iterate on.
+        We are planning to tackle other sources of discrepancy in the diffusion method through
+        more conventional approaches such as
+        albedo boundary conditions on outer boundaries and SPH/discontinuity factors or similar
+        treatments in bulk regions since these existing methods fare fairly well in non-highly
+        neutron absorbing regions. We hope to apply the hybrid method treatment to control rods
+        and their vicinity for control rod-initiated transient scenarios.
+
+        Please also note the newly added discussions throughout the 1-D results
+        section IV.A on $k_\text{eff}$ and flux errors arising from energy discretization,
+        fuel-graphite heterogeneity, and leakage.
+    \end{solution}
+
+\end{questions}
+%\section*{Reviewer 2}
+%\begin{questions}
+%
+%        %---------------------------------------------------------------------
+%        \question The color scheme in figures 4 and 7 make it difficult to
+%        distinguish each individual components in the figures.
+%
+%        \begin{solution}
+%        	Thank you for your valuable input. We changed the color scheme
+%        	to ensure that the colors representing each component are more
+%        	distinct and easier to tell apart.
+%
+%        \end{solution}
+%
+%        %---------------------------------------------------------------------
+%        \question Review comment 2
+%        \begin{solution}
+%        	Changes for review comment 2
+%
+%        \end{solution}
+%
+%
+%        %---------------------------------------------------------------------
+%\end{questions}
+%\bibliographystyle{unsrt}
+%\bibliography{revise}
 \end{document}
 
   %
