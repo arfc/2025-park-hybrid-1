@@ -147,9 +147,42 @@
 % \end{frontmatter}
 \maketitle
 \section*{Review General Response}
-We would like to thank the reviewers for their detailed assessment of this
-paper. Your comments have resulted in changes which certainly improved the
-paper.
+We sincerely thank the reviewers for their careful evaluation of our manuscript and for the
+detailed and constructive feedback. The comments significantly improved the clarity, technical
+rigor, and positioning of the work. We have revised the manuscript accordingly and address each
+comment in this response document.
+
+Major revisions include:
+%
+\begin{enumerate}
+  \item Clarification of Scope and Claims
+
+We have revised the Introduction, Abstract, and Conclusion to more clearly state that the hybrid
+method is not intended to recover full-domain transport accuracy. Instead, it provides localized
+transport correction near control rods for improved rod worth and power prediction in multiphysics
+simulations. Claims regarding efficiency and accuracy have been moderated accordingly.
+
+  \item Improved Error Attribution
+
+    The contribution of vacuum boundary leakage to $k_\text{eff}$ discrepancies has been quantified and
+explicitly discussed in the Results section. We clarify that the hybrid method does not correct
+leakage effects on the outer boundary.
+We also now clearly separate the effects of energy discretization, spatial discretization, and
+leakage when interpreting the results.
+
+  \item Clarifications on Method Implementation
+
+The descriptions of outer iterations, convergence criteria, adaptive buffer region boundary, and the
+diffusion coefficient limiter have been revised to remove ambiguity.
+
+  \item Reduced Overstatement of Efficiency
+
+Computational cost comparisons have been reframed to emphasize that the hybrid method incurs
+moderate additional cost relative to diffusion while avoiding the significantly larger cost of
+full-domain $S_8$ transport.
+\end{enumerate}
+
+We believe these revisions substantially strengthen the manuscript and address all reviewer concerns.
 
 %---------------------------------------------------------------------
 % REVIEWER 2
@@ -173,18 +206,18 @@ paper.
         We added the following sentence to the abstract: ``We implemented the hybrid method in
         Moltres, a MOOSE-based multiphysics reactor analysis application, leveraging MOOSE's robust
         finite-element solver infrastructure together with Moltres' existing reactor modeling
-        capabilities to reduce development time.''. We also placed greater emphasis on the benefits
-        in Section II.F Numerical Implementation.
+        capabilities to reduce development time.'' We also added text to the introduction and
+        numerical implementation sections highlighting the benefits of using MOOSE.
     \end{solution}
 
     \question (Abstract Comment) The method is accurate. Is it? Most hybrid methods are designed to converge to the transport solution, but yours does not seem to. Why? The HOLO method had some issues in that the consistency terms were so expensive and difficult to calculate. Is that happening here?
     \begin{solution}
         We accept that the accuracy statement may be misleading and so we replaced
-        the sentence with: ``'In 1-D and 2-D $k$-eigenvalue simulations, the multigroup hybrid
-        method improved control rod worth estimates relative to the multigroup neutron diffusion
-        method.''
+        the sentence with:
+        ``In 1-D and 2-D $k$-eigenvalue simulations, the multigroup hybrid method reduced control
+        rod worth errors relative to multigroup diffusion and improved channel power predictions.''
 
-        If we focus solely on the subregion, the hybrid method solution converges to the equivalent
+        If we focus solely on the $S_N$ solution in the subregion, it converges to the equivalent
         $S_N$ transport solution given the same subregion boundary sources as defined by Eq.\ 19
         and 31.
 
@@ -193,9 +226,8 @@ paper.
         corrections are limited only to the subregion around the control rods. Discrepancies
         arising from uncorrected reaction rates and neutron leakage in the rest of the problem
         domain still exist. We plan to address those discrepancies through more conventional
-        approaches such as albedo boundary conditions and SPH/discontinuity factors since these
-        existing approaches are computationally cheaper than the hybrid method and suitable for
-        fixed geometry regions.
+        approaches such as albedo boundary conditions and the $SP_N$ method since these
+        existing approaches are computationally cheaper than the hybrid method.
 
         Neutron leakage error alone accounts for about -300~pcm
         discrepancy between the hybrid method and OpenMC-MG (multigroup) for the 1-D cases with vacuum
@@ -206,7 +238,7 @@ paper.
         channel power distributions fall within 0.5\% and 3\%. While not perfect, these represent
         significant improvements over the diffusion method.
 
-        We edited text in the abstract, introduction, and conclusions sections to more clearly
+        We edited text throughout the paper to more clearly
         reflect the discussion points made here.
     \end{solution}
 
@@ -227,7 +259,11 @@ paper.
 
     \question (Abstract Comment) Adaptive boundaries. How is it adaptive? Don't you just manually set the location of the boundary? I may have missed something.
     \begin{solution}
-        
+        The physical boundaries of the correction subregion $V_1$
+        are indeed manually fixed. However, the ``adaptive'' aspect refers to the buffer region. The
+        algorithm dynamically determines the inner boundary of this buffer region during each
+        iteration by locating where the drift correction parameter changes sign (i.e., reaches
+        zero). We have extensively revised Section II.C to clarify this distinction.
     \end{solution}
 
     \question (Abstract Comment) In eigenvalue problems, keff, as an integral quantity, converges faster than, say, the eigenmode. I don't know, but it seems like control rod worth estimates might converge even faster. If so, then it is much less constraining to say that you match control rod worths than keff, which is less constraining than saying that you match the flux.
@@ -235,15 +271,8 @@ paper.
         We recognize that the keff and rod worths converge faster than the spatial flux
         distribution. We highlighted rod worth comparisons in the abstract because we are
         developing this hybrid method for use in multiphysics MSR transient analyses involving
-        control rod motion. We have now added flux and channel power observations to the abstract.
-
-%        The results section includes keff and 2-D channel power distributions.
-%        keff discrepancies between the hybrid method and OpenMC-MG (multigroup) hover between 100
-%        and 400 pcm which goes beyond the $<$300~pcm range we aim for with a deterministic code
-%        for time-dependent simulations. We plan to address the keff discreapancies through
-%        pre-calculated correction factors such as albedo boundary conditions to correct neutron
-%        leakage errors which amount to about -300~pcm for the 1-D cases with vacuum boundary
-%        conditions.
+        control rod motion. We added that the hybrid method also improves channel power distribution
+        to the abstract.
     \end{solution}
 
     %--- General Comments ---
@@ -273,42 +302,41 @@ paper.
         We misused the word ``convergence'' here. The
         original intent of the opening sentence is a simple statement that the $S_N$
         subproblem requires boundary sources. We edited
-        the opening sentence to:
-        ``The $S_N$ subproblem on $V_1$ requires boundary sources along $\partial V_1$ derived from
-        the neutron diffusion solution of the previous iteration.''
+        the sentence to:
+        ``It also requires boundary sources along $\partial V_1$ derived from
+        the neutron diffusion solution.''
     \end{solution}
 
     \question Figure 1 should be clarified. What does "Final ... solutions obtained" in the bottom oval mean? k wasn't mentioned above in the figure at all. Are more calculations made after convergence, or is the last iteration merely retained?
     \begin{solution}
-      We added the missing $k^{(0)}$ and $k^{(i)}$ symbols to the figure and edited the bottom oval
-      to clarify that the last iteration is retained without any further calculations:
-      ``Output convergead $\phi_g$ and $k$ solution''.
+        We mistakenly omitted $k$.
+        We overhauled iteration algorithm steps to provide a clearer description.
     \end{solution}
 
     \question As I was reading the subsolver boundary conditions section, my expectation was that you have to place the boundary in a location where diffusion is valid, but if it is place to far into the diffusion region, you lose efficiency (but not accuracy). There was a lot of discussion about setting the buffer region, but it seems that you're simply looking for an extrapolation distance (such as used in a Marshak boundary condition, which is sometimes transport-corrected from a coefficient of 2/3 to 0.7104). If this is the case, can you make this section more concise and more mathematically rigorous?
     \begin{solution}
-        
+        Your analysis is correct; the buffer region effectively acts as an extrapolation distance
+        where transport-derived drift coefficients are discarded. We heavily revised Section
+        II.C to make it more concise and mathematically rigorous in response to this comment and
+        Comment 6.
     \end{solution}
 
     \question Regarding Figure 3, I was expecting the subsolver region to extend just beyond the control rods to capture any control-rod-related transport effects that extend outward from the control rod. What does it mean that you do, or have to, go out far enough to include two fuel regions? It seems like there are transport effects at every fuel-graphite interface, which would mean that the SN subregion should be centered around the control rod and every fuel-graphite interface. I am not finding that seeing only Group 1 and 8 fluxes is enough. Can you also plot the total flux? It is not clear what motivated the selection of the buffer location. The reference D's in Figure 3 suggest that you shouldn't have stopped at 10cm, but rather set an SN subsolver around every interface.
     \begin{solution}
-        
+        While it is true that transport effects exist at every fuel-graphite interface, placing an
+        $S_N$ subsolver around every interface would nearly equate to running a full-domain transport
+        simulation. We extend the subregion to 10~cm to ensure at least one neutron mean free path
+        between the control rod+air region and the subregion boundary. This helped separate
+        transport effects arising from the control rod from the $P_1$ boundary effects. The goal is
+        to accurately capture the severe angular gradients near the rod to improve rod worth
+        estimates, rather than perfectly resolving the entire heterogeneous core.
+        We added phrasing in Section II.C to explicitly state our reasoning for the subregion size.
     \end{solution}
 
     \question At the end of Section II.F, you say, "...for the possibility of overall convergence." That is a very loaded term. Can you give more rigorous details of the convergence or lack of convergence?
     \begin{solution}
-        We overhauled the entire paragraph to provide a more concise description of the convergence criteria.
-
-        New paragraph:
-
-        ``The hybrid method employs the \texttt{MultiApp} and \texttt{Transfers} systems
-        \cite{gaston_physics-based_2015} to implement fixed point iterative coupling between the $S_N$ and
-        neutron diffusion solvers for the hybrid $S_N$-diffusion method. In each fixed point iteration,
-        each solver reaches convergence when the integral residual value fall below specified convergence
-        tolerance thresholds $\epsilon_\text{tol}$. The fixed point iterations terminate when the initial
-        residual value of the neutron diffusion solver at the start of an iteration falls below another
-        specified convergence tolerance value. This signals that the $S_N$ and neutron diffusion solutions
-        have converged and remain unchanged within given tolerances relative to the previous iteration.''
+        We overhauled iteration algorithm steps and the subsequent paragraph in Section II.C to
+        provide clearer descriptions of the convergence criteria.
     \end{solution}
 
     \question In Table II, under the SN Transport column, can you -- or should you -- be more specific that "discrete" for the first two rows? Like "FE" or "collocation"?
@@ -335,31 +363,50 @@ paper.
         is inconsistent with OpenMC-CE in Cases 2a and 3a. The only difference between these modes
         is the energy discretization; adding higher Legendre orders for scattering did not
         noticeably change $k$ for OpenMC-MG. The hybrid method appears to perform worse for Cases
-        2b and 3b, but by the same reasoning, OpenMC-MG and $S_8$ perform worse for Cases 2a and
+        2b and 3b, but by the same logic, OpenMC-MG and $S_8$ appear to perform worse for Cases 2a and
         3a.
 
-        We also wish to highlight that evaluating the validity of the multigroup approximation is
-        not the objective of this work, which is the reason for providing OpenMC-MG results.
+        We replaced Fig 9 with the neutron group flux distributions to illustrate the flux differences
+        observed between OpenMC-CE and OpenMC-MG. We will aim to find a better multigroup structure
+        for future studies.
     \end{solution}
 
     \question If you could get the figures closer to where they're referenced in the text, that would be most appreciated by the readers.
     \begin{solution}
-        Done
+        We rearranged the figures to improve proximity to their reference in the text.
     \end{solution}
 
     \question For many of the figures in the results section, there is extensive description of what is seen in the figures. It would be more concise to refer to the figures and give interpretations of, or meaning to, the figures.
     \begin{solution}
-        Done
+        We replaced extensive descriptions with concise interpretive discussion points.
     \end{solution}
 
     \question In Figure 8, why is the hybrid method doing better than diffusion in the diffusion regions? Shouldn't it admit the diffusion solution there? Or is it tightly coupled to the control rod subregion? Is diffusion even valid in the diffusion region? This goes back to the comment that it seems like the SN subregions should be around every interface. Conversely, why is the hybrid method not matching transport in the SN subregion?
     \begin{solution}
-        
+        The hybrid method tightly couples the $S_N$ subsolver to the diffusion solver.
+
+        Looking closely at Fig 10, the flux shapes in the $S_N$ subregion match the transport
+        solution while the flux shapes in the diffusion region matches the diffusion solution. Flux
+        shapes are governed by local fission, absorption, and scattering cross sections.
+        The transition from transport-like to
+        diffusion-like occurs at around $x=7.5$~cm, where the buffer region starts.
+
+        Your observations of flux mismatch point to the differing flux magnitudes due to the
+        $S_N$-diffusion boundary coupling which effectively results in different neutron currents
+        acting on the $S_N$ and diffusion regions at $x=7.5$~cm compared to full
+        transport or full diffusion solutions.
     \end{solution}
 
     \question In Figure 10, do the discrepancies indicate that the SN subregion is not properly located? Or that the SN subregion should be group-dependent?
     \begin{solution}
-        
+        Drift values near the subregion boundary will always deviate from the reference values
+        due to the $P_1$ approximation used for the $S_N$ boundary source from the diffusion
+        solution unless the boundary is placed in a large homogeneous region appropriate for diffusion.
+
+        With the buffer region covering $x=7.5$~cm to 10~cm, the drift values with significant
+        discrepancies are not applied to the low-order diffusion model. We set up the fixed
+        correction subregion to be large enough for all groups. The adaptive buffer region inner
+        boundary handles group-dependent behavior.
     \end{solution}
 
     \question In Figure 12, what is the meaning of the non-monotonic hybrid curve?
@@ -376,7 +423,7 @@ paper.
     \begin{solution}
         In response to Comment 5, we added computational runtime comparisons between the hybrid and
         neutron diffusion methods. Due to existing limitations regarding $S_N$ solver memory usage,
-        we provided a lower limit estimate of $S_8$ computational costs
+        we provided a baseline estimate of $S_8$ computational costs
         based on the fact that an $S_8$ simulation has 80$\times$ as many unknowns as a neutron
         diffusion simulation on the same mesh.
     \end{solution}
@@ -401,19 +448,18 @@ paper.
 
     \question Please make the discussion on pages 36-38 much more concise. The comment, "This is likely due to statistical uncertainty..." seems a little inadequate; can you investigate it and state it more rigorously? You're normalizing to the average (clear if you move the $N_i$ to the denominator as 1/$N_i$), so you don't need all the discussion.
     \begin{solution}
-        
+        We made significant changes to the 2-D results section to replace descriptive text with
+        concise interpretive text in response to Comment 21.
+        We also added discussions throughout the paper addressing errors arising from energy
+        discretization, core heterogeneity, and leakage.
     \end{solution}
 
     \question Page 39, lines 13-17, I don't understand the comment about scalar coefficients. Can you refer to your equations or somehow make this clearer and more robust?
     \begin{solution}
         We were referring to the fact that the neutron diffusion method performs poorly in
-        low-scattering regions (e.g., air). The isotropic nature of diffusion results in a flat
-        flux profile in air regions with little angular variation.
-
-        We combined the sentence with the previous sentence to make it more concise:
-        ``The neutron diffusion and hybrid methods report similar percentage errors relative to
-        OpenMC-CE, except near the center where the neutron diffusion method is known to perform
-        poorly in low-scattering near-void regions.''
+        low-scattering regions (e.g., air). The isotropic diffusion term results in a flat
+        diffusive flux profile in air regions.
+        We revised this paragraph to provide better interpretations of the figures.
     \end{solution}
 
     \question Page 43, the sentence at the very could be made much more concise or could be more interpretive rather than repeating information from a table. You say, "is effective," but is it really? Down below, you say that increasing the number of energy groups makes the problem more diffusive - how is that? This paragraph should be more rigorous. "which clarifies"... I'm not sure that it does. Can you plot the cross sections to better make this argument?
@@ -468,7 +514,7 @@ paper.
         encompass the entire 50-cm domain would be equivalent to a full $S_8$ calculation with
         nonlinear diffusion acceleration, which is already depicted in the figures as red lines.
         Using the hybrid method for correcting neutron leakage at the outer boundaries is outside
-        the scope of this paper. We plan to apply albedo boundary conditions derived from
+        the scope of this paper. Instead, we plan to apply albedo boundary conditions derived from
         OpenMC/Serpent to tackle leakage errors.
     \end{solution}
 
@@ -480,10 +526,10 @@ paper.
 
     \question I am curious that should the meshes for subregions decided before all the calculations are performed? And how are the sizes of subregions decided? Are they decided based on the mean free path, but of which energy group?
     \begin{solution}
-        The subregion sizes were chosen based on placing the subregion boundary at least one mean
+        The subregion sizes were chosen based on placing the subregion boundary about one mean
         free path away from the control rod and air regions. We considered mean free paths of
         group 1 neutrons in fuel and graphite since they are the largest. We added this information
-        to Section IV.A.6 of the revised draft.
+        to Sections II.C and III.B of the revised draft.
     \end{solution}
 
     \question Although it is seen in TABLE V that hybrid method outperforms diffusion method in terms of predicting the rod worth, but the errors are significant in keff. This seems to lower the attractiveness of the method, given the complex theory and the iterative process.
@@ -492,10 +538,11 @@ paper.
         an exploratory work that we will iterate on.
         We are planning to tackle other sources of discrepancy in the diffusion method through
         more conventional approaches such as
-        albedo boundary conditions on outer boundaries and SPH/discontinuity factors or similar
-        treatments in bulk regions since these existing methods fare fairly well in non-highly
-        neutron absorbing regions. We hope to apply the hybrid method treatment to control rods
-        and their vicinity for control rod-initiated transient scenarios.
+        albedo boundary conditions on outer boundaries and $SP_N$ methods or other correction
+        treatments in bulk regions since these existing methods fare decently in non-highly
+        neutron absorbing regions. Our newly added discussions on flux distributions also indicate
+        that fine angular resolution of higher energy fluxes may not be necessary for multiphysics
+        simulations of thermal MSRs.
 
         Please also note the newly added discussions throughout the 1-D results
         section IV.A on $k_\text{eff}$ and flux errors arising from energy discretization,
@@ -503,32 +550,6 @@ paper.
     \end{solution}
 
 \end{questions}
-%\section*{Reviewer 2}
-%\begin{questions}
-%
-%        %---------------------------------------------------------------------
-%        \question The color scheme in figures 4 and 7 make it difficult to
-%        distinguish each individual components in the figures.
-%
-%        \begin{solution}
-%        	Thank you for your valuable input. We changed the color scheme
-%        	to ensure that the colors representing each component are more
-%        	distinct and easier to tell apart.
-%
-%        \end{solution}
-%
-%        %---------------------------------------------------------------------
-%        \question Review comment 2
-%        \begin{solution}
-%        	Changes for review comment 2
-%
-%        \end{solution}
-%
-%
-%        %---------------------------------------------------------------------
-%\end{questions}
-%\bibliographystyle{unsrt}
-%\bibliography{revise}
 \end{document}
 
   %
