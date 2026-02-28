@@ -1,19 +1,22 @@
 \begin{abstract}
-High-fidelity neutronics methods are computationally expensive for time-dependent reactor analyses
-without extensive computational resources. However, these methods are necessary to accurately model
-and simulate strong angular effects on neutron fluxes near control rods.
+High-fidelity neutronics methods are computationally expensive for time-dependent reactor analyses,
+particularly when computational resources are limited. However, these methods are necessary to
+accurately model and simulate strong angular effects on neutron fluxes near control rods.
 This work introduces a hybrid $S_N$-diffusion approach for improving control rod modeling in molten
-salt reactors over the neutron diffusion method.
-The hybrid method combines the strengths of the $S_N$ and neutron diffusion methods by generating
-transport corrections using the $S_N$ method near control rods while keeping computational costs
-low elsewhere. An adaptive boundary coupling algorithm that couples the $S_N$ and neutron diffusion
+salt reactors over the neutron diffusion method. The hybrid method applies the $S_N$ transport
+method in localized subregions near control rods to generate
+transport corrections while using neutron diffusion elsewhere, thereby avoiding the memory and
+computational expense of full-domain $S_N$ transport.
+An adaptive boundary coupling algorithm that couples the $S_N$ and neutron diffusion
 solvers allows the hybrid method to adapt to the
 transport correction parameters and preserve smooth neutron flux gradients across the interface.
+The objective is not to recover full-domain transport accuracy, but to improve control rod modeling
+in multiphysics simulations while maintaining tractable computational cost.
 We implemented the hybrid method in Moltres, a MOOSE-based multiphysics reactor analysis
 application, leveraging MOOSE's robust finite-element solver infrastructure
 together with Moltres' existing reactor modeling capabilities to reduce development time.
-In 1-D and 2-D $k$-eigenvalue simulations, the multigroup hybrid method improved control
-rod worth and channel power estimates relative to the multigroup neutron diffusion method.
-This work lays the groundwork for accurate and cost-efficient simulations of asymmetric
+In 1-D and 2-D $k$-eigenvalue simulations, the multigroup hybrid method reduced control rod worth
+errors relative to multigroup diffusion and improved channel power predictions.
+This work lays the foundation for accurate and computationally efficient simulations of asymmetric
 reactivity insertion transients in molten salt reactors.
 \end{abstract}
