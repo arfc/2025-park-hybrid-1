@@ -229,8 +229,8 @@ convergence tolerance and triggering another flux update.
 
 Figure \ref{fig:sn-tol} shows the $k_\text{eff}$ error estimates relative to the reference value
 when $\epsilon_\text{tol}=10^{-8}$. The hybrid method exhibits superlinear convergence ($q=1.333$)
-with respect to the $S_N$ subsolver convergence tolerance. Based on these results, we set
-$\epsilon_\text{tol}=10^{-5}$ to balance fidelity and computational cost;
+with respect to the $S_N$ subsolver convergence tolerance. These results suggest that
+$\epsilon_\text{tol}=10^{-5}$ provides an optimal balance between fidelity and computational cost;
 $k_\text{eff}$ error is less than 0.01 pcm and further tightening the tolerance increases the
 number of outer iterations from 2 to 3.
 
@@ -356,7 +356,7 @@ methods. The discrepancies between OpenMC-CE and OpenMC-MG, particularly in grou
 8, substantiate our assessment that energy discretization errors are responsible for
 multigroup $k_\text{eff}$ deviations.
 While $S_8$ does not reproduce the angular resolution of groups 1 and 2 as accurately as OpenMC-MG
-in the heterogenerous fuel-graphite lattice, the solutions are consistent in the lower-energy
+in the heterogeneous fuel-graphite lattice, the solutions are consistent in the lower-energy
 groups. Moreover, the agreement in $k_\text{eff}$ and rod worth suggests that fine angular
 resolution in the highest energy groups may be of limited importance for accurately predicting
 global reactivity and heat generation in multiphysics simulations of thermal graphite-moderated
